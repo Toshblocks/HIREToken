@@ -22,7 +22,6 @@ contract HireIco is PausableToken {
     bool public halted = false; //the owner address can set this to true to halt the crowdsale due to emergency
 
     uint256 public preSaleEtherMaxCap; // should be specified as: 8000 * 1 ether
-    uint256 public icoEtherMinCap; // should be specified as: 8000 * 1 ether
     uint256 public icoEtherMaxCap; // should be specified as: 40000 * 1 ether
     uint256 public rate = 1800; // standard HIRE/ETH rate
 
@@ -33,22 +32,18 @@ contract HireIco is PausableToken {
             address newOwner, 
             uint256 newPreSaleStartTimestamp, 
             address newWallet,
-            uint256 newPreSaleEtherMaxCap, 
-            uint256 newIcoEtherMinCap, 
+            uint256 newPreSaleEtherMaxCap,
             uint256 newIcoEtherMaxCap) {
         require(newOwner != 0x0);
         require(newWallet != 0x0);
-        require(newPreSaleStartTimestamp > 0);
-        require(newIcoEtherMinCap <= newIcoEtherMaxCap);
+        require(newPreSaleStartTimestamp > now);
         require(newPreSaleEtherMaxCap > 0);
-        require(newIcoEtherMinCap > 0);
         require(newIcoEtherMaxCap > 0);
         pause();
         totalSupply = 0; // pre-sale and ICO will generate tokens
         preSaleStartTimestamp = newPreSaleStartTimestamp;
         preSaleEndTimestamp = preSaleStartTimestamp + 7 days;
         preSaleEtherMaxCap = newPreSaleEtherMaxCap;
-        icoEtherMinCap = newIcoEtherMinCap;
         icoEtherMaxCap = newIcoEtherMaxCap;
         wallet = newWallet;
         transferOwnership(newOwner);
@@ -86,7 +81,6 @@ contract HireIco is PausableToken {
     modifier acceptsFunds() {
         require(isPreSalePeriod() || isIcoPeriod());
         require(!isMaxCapReached());
-        require(!isMinCapReachedAfterIcoEnd());
         _;
     }
 
@@ -104,11 +98,6 @@ contract HireIco is PausableToken {
 
     function isMaxCapReached() public constant returns(bool isMaxCapReached) {
         return totalRaised >= icoEtherMaxCap;
-    }
-
-    function isMinCapReachedAfterIcoEnd() public constant returns(bool isMinCapReachedAfterIcoEnd) {
-        return totalRaised >= icoEtherMinCap
-                && now > icoEndTimestamp;
     }
 
     // Unit tested
