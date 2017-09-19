@@ -109,7 +109,7 @@ contract('HireIco', function(accounts) {
     }).then(done, done);
   });
 
-  it("should convert 1 ETH to 1800 * 16% in PreSale", function(done) {
+  it("should convert 1 ETH to 1800 * 20% in PreSale", function(done) {
     var currentBlockTimeStamp = web3.eth.getBlock(web3.eth.blockNumber).timestamp;
     var hire;
     var walletInitBalance;
@@ -129,13 +129,13 @@ contract('HireIco', function(accounts) {
       assert.equal(isPreSalePeriod, true, "it should be preSale period now");
       return hire.balanceOf(accounts[1]);
     }).then(function(balanceOf) {
-      assert.equal(balanceOf.toNumber(), parseInt(Math.pow(10, 18) * 450 * 1.16), "incorrect balance after investment with bonus");
+      assert.equal(balanceOf.toNumber(), parseInt(Math.pow(10, 18) * 450 * 1.2), "incorrect balance after investment with bonus");
       return hire.totalRaised();
     }).then(function(totalRaised) {
       assert.equal(totalRaised.toNumber(), Math.pow(10, 18), "incorrect totalRaised after investment with bonus");
       return hire.totalSupply();
     }).then(function(totalSupply) {
-      assert.equal(totalSupply.toNumber(), parseInt(Math.pow(10, 18) * 450 * 1.16), "incorrect totalSupply after investment with bonus");
+      assert.equal(totalSupply.toNumber(), parseInt(Math.pow(10, 18) * 450 * 1.2), "incorrect totalSupply after investment with bonus");
       var walletBalance = web3.eth.getBalance(accounts[5]);
       assert.equal(web3.eth.getBalance(hire.address), 0, "contract balance should be zero at all times");
       assert.equal(walletBalance.toNumber(), parseInt(Math.pow(10, 18)) + walletInitBalance.toNumber(), "wallet balance should have increased by 1 ETH");
@@ -233,7 +233,7 @@ contract('HireIco', function(accounts) {
       assert.equal(result.logs[0].event, "Buy", "Buy event was not emited");
       assert.equal(result.logs[0].args.recipient, accounts[6], "Incorrect recipient");
       assert.equal(result.logs[0].args.weiAmount, parseInt(1.5 * Math.pow(10, 18)), "Incorrect number of weiAmount");
-      assert.equal(result.logs[0].args.tokens, parseInt(Math.pow(10, 18) * 450 * 1.16 * 1.5), "Incorrect number of HIRE tokens");
+      assert.equal(result.logs[0].args.tokens, parseInt(Math.pow(10, 18) * 450 * 1.20 * 1.5), "Incorrect number of HIRE tokens");
       var icoStartTimeStamp = currentBlockTimeStamp + 28 * 24 * 60 * 60;
       var icoEndTimeStamp = icoStartTimeStamp + 1000;
       return hire.setIcoDates(icoStartTimeStamp, icoEndTimeStamp, {from: accounts[0]});
@@ -256,7 +256,7 @@ contract('HireIco', function(accounts) {
       return hire.totalSupply();
     }).then(function(totalSupply) {
       // divided by Math.pow(10, 5) to still be within JS int scope:
-      assert.equal(totalSupply.div(Math.pow(10, 5)), parseInt(Math.pow(10, 13) * 450 * (1.16*1.5 + 4)), "Incorrect totalSupply");
+      assert.equal(totalSupply.div(Math.pow(10, 5)), parseInt(Math.pow(10, 13) * 450 * (1.2*1.5 + 4)), "Incorrect totalSupply");
       return hire.totalRaised();
     }).then(function(totalRaised) {
       assert.equal(totalRaised, (1.5 + 4) * Math.pow(10, 18), "Incorrect totalRaised");
@@ -275,7 +275,7 @@ contract('HireIco', function(accounts) {
       assert.equal(result.logs[0].event, "Buy", "Buy event was not emited");
       assert.equal(result.logs[0].args.recipient, accounts[1], "Incorrect recipient");
       assert.equal(result.logs[0].args.weiAmount, 1 * Math.pow(10, 18), "Incorrect number of weiAmount");
-      assert.equal(result.logs[0].args.tokens, parseInt(Math.pow(10, 18) * 450 * 1.16 * 1), "Incorrect number of HIRE tokens");
+      assert.equal(result.logs[0].args.tokens, parseInt(Math.pow(10, 18) * 450 * 1.2 * 1), "Incorrect number of HIRE tokens");
       // Fastforward 2 moredays:
       return solidityTestUtil.evmIncreaseTime(7 * 24 * 60 * 60);
     }).then(function(result) {
@@ -283,7 +283,7 @@ contract('HireIco', function(accounts) {
     }).then(function(totalSupply) {
       // divided by Math.pow(10, 5) to still be within JS int scope:
       assert.equal(totalSupply.div(Math.pow(10, 5)), parseInt(Math.pow(10, 13) * 450 *
-        (1.16)), "Incorrect totalSupply");
+        (1.2)), "Incorrect totalSupply");
       return hire.totalRaised();
     }).then(function(totalRaised) {
       assert.equal(totalRaised, (6) * Math.pow(10, 18), "Incorrect totalRaised");
