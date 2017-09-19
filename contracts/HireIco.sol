@@ -46,7 +46,7 @@ contract HireIco is PausableToken {
         pause();
         totalSupply = 0; // pre-sale and ICO will generate tokens
         preSaleStartTimestamp = newPreSaleStartTimestamp;
-        preSaleEndTimestamp = preSaleStartTimestamp + 28 days;
+        preSaleEndTimestamp = preSaleStartTimestamp + 7 days;
         preSaleEtherMaxCap = newPreSaleEtherMaxCap;
         icoEtherMinCap = newIcoEtherMinCap;
         icoEtherMaxCap = newIcoEtherMaxCap;
@@ -70,13 +70,13 @@ contract HireIco is PausableToken {
     }
     
     /// PreSale Bonuses:
-    /// - 1-7 day 16%
+    /// - 1-7 day 20%
     // Unit tested
     function calculateTokens(uint256 weiAmount) constant returns(uint) {
         uint256 defaultAllocation = weiAmount.mul(rate);
         if (isPreSalePeriod()) {
             if (now <= preSaleStartTimestamp + 7 days) {
-                return defaultAllocation.mul(116).div(100);
+                return defaultAllocation.mul(120).div(100);
             }
         }
         return defaultAllocation;
