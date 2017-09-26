@@ -15,11 +15,3 @@ Versions `truffle@3.2.93` and `ethereumjs-testrpc@3.9.2` as of July 2017:
 ## Building
 
 	truffle compile
-
-## Testing
-
-	# first run testrpc in the background, e.g.:
-	nohup testrpc > testrpc.log &
-
-	# then run the tests
-	truffle test
