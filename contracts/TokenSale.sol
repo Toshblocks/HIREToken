@@ -9,6 +9,9 @@ import './Token.sol';
 contract TokenSale {
     using SafeMath for uint256;
 
+    // The address of the owner of the contract.
+    address public creatorAdmin;
+
     // Instance of the Token Contract deployed
     Token public token;
 
@@ -93,6 +96,15 @@ contract TokenSale {
 
     modifier isUnHalted() {
         require(crowdSaleState != State.Halt);
+        _;
+    }
+
+    /*****
+        * @dev Modifier to check if the caller of the function is
+        * the owner of the contract.
+        */
+    modifier onlyOwner() {
+        require(creatorAdmin == msg.sender);
         _;
     }
 

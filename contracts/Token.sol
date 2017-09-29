@@ -1,6 +1,5 @@
 pragma solidity ^0.4.15;
 
-import './Ownable.sol';
 import './SafeMath.sol';
 import './StandardToken.sol';
 
@@ -19,10 +18,6 @@ contract Token is StandardToken {
 
     /*****
         * @dev Sets the variables related to the Token
-        * @param _name              string      The name of the Token
-        * @param _symbol            string      Defines the Token Symbol
-        * @param _initialSupply     uint256     The total number of the tokens available
-        * @param _decimals          uint256     Defines the number of decimals places of the token
         */
     function Token() {
         totalSupply = 100 ** 24; // 100 Million Tokens in supply
