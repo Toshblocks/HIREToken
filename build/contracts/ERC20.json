@@ -16,12 +16,11 @@
       "name": "approve",
       "outputs": [
         {
-          "name": "",
+          "name": "ok",
           "type": "bool"
         }
       ],
       "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -35,7 +34,6 @@
         }
       ],
       "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -57,12 +55,11 @@
       "name": "transferFrom",
       "outputs": [
         {
-          "name": "",
+          "name": "ok",
           "type": "bool"
         }
       ],
       "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -81,7 +78,6 @@
         }
       ],
       "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -99,12 +95,11 @@
       "name": "transfer",
       "outputs": [
         {
-          "name": "",
+          "name": "ok",
           "type": "bool"
         }
       ],
       "payable": false,
-      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
@@ -127,7 +122,6 @@
         }
       ],
       "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -178,5 +172,5 @@
   "unlinked_binary": "0x",
   "networks": {},
   "schema_version": "0.0.5",
-  "updated_at": 1505841661675
+  "updated_at": 1506699094590
 }

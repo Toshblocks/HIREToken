@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.10;
 
 /*****
     * @title ERC20 Interface
