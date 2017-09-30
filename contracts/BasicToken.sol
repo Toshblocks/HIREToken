@@ -1,21 +1,24 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.13;
 
 /*****
     * Orginally from https://github.com/OpenZeppelin/zeppelin-solidity
     * Modified by https://github.com/agarwalakarsh
     */
-
-import './ERC20.sol';
 import './SafeMath.sol';
 
 /*****
     * @title Basic Token
     * @dev Basic Version of a Generic Token
     */
-contract BasicToken is ERC20 {
+contract BasicToken {
     using SafeMath for uint;
 
+    uint public totalSupply;
+
     mapping(address => uint) balances;
+
+    event Approval(address indexed owner, address indexed spender, uint value);
+    event Transfer(address indexed from, address indexed to, uint value);
 
     /*****
         * @dev Tranfer the token balance to a specified address
@@ -50,5 +53,12 @@ contract BasicToken is ERC20 {
         */
     function balanceOf(address _owner) constant returns (uint balance){
         return balances[_owner];
+    }
+
+    /*****
+        * @dev Gets the totalSupply of the tokens.
+        */
+    function totalSupply() constant returns (uint256) {
+        return totalSupply;
     }
 }

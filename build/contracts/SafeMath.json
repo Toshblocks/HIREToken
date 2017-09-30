@@ -1,8 +1,0 @@
-{
-  "contract_name": "SafeMath",
-  "abi": [],
-  "unlinked_binary": "0x60606040523415600e57600080fd5b5b603680601c6000396000f30060606040525b600080fd00a165627a7a72305820938b1e4db783c1b61bf81a18f1b72cb7b7dead7dd6f68be2cf0c94ff7ce8a2570029",
-  "networks": {},
-  "schema_version": "0.0.5",
-  "updated_at": 1506699094590
-}

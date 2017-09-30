@@ -1,4 +1,4 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.13;
 
 import './SafeMath.sol';
 import './StandardToken.sol';
@@ -21,16 +21,5 @@ contract Token is StandardToken {
         */
     function Token() {
         totalSupply = 100 ** 24; // 100 Million Tokens in supply
-    }
-
-    /*****
-        * @dev Used to remove the balance, when asking for refund
-        * @param _recipient address The beneficiary of the refund
-        * @return           bool    Returns true, if successful
-        */
-    function refundedAmount(address _recipient) returns (bool) {
-        require(balances[_recipient] != 0);
-        balances[_recipient] = 0;
-        return true;
     }
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.13;
 
 /// @title Math operations with safety checks
 library SafeMath {
