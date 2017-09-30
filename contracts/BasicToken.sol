@@ -26,7 +26,6 @@ contract BasicToken {
         * @param _value The value to be transferred
         */
     function transfer(address _to, uint _value) returns (bool success) {
-        balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
         return true;

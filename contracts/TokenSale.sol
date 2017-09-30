@@ -82,7 +82,7 @@ contract TokenSale {
         * @dev Modifier to check that amount transferred is not 0
         */
     modifier nonZero() {
-        require(msg.value != 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -165,7 +165,6 @@ contract TokenSale {
         */
     function startICO() onlyOwner {
         isPreSalePeriod();
-        isICOPeriod();
     }
 
     /*****
