@@ -170,21 +170,17 @@ contract TokenSale {
     /*****
         * @dev Fallback Function to buy the tokens
         */
-    function () isUnHalted nonZero payable {
-        if(isPreSalePeriod() || isICOPeriod()) {
-            buyTokens(msg.sender, msg.value);
-        } else {
-            revert();
-        }
+    function () payable {
+        revert();
     }
 
     /*****
         * @dev Internal function to execute the token transfer to the Recipient
         * @param _recipient     address     The address who will receives the tokens
-        * @param _value         uint256     The amount invested by the recipient
         * @return success       bool        Returns true if executed successfully
         */
-    function buyTokens(address _recipient, uint256 _value) internal returns (bool success) {
+    function buyTokens(address _recipient) isUnHalted nonZero payable returns (bool success) {
+        uint256 _value = msg.value;
         uint256 boughtTokens = calculateTokens(_value);
 
         if(token.balanceOf(_recipient) == 0) {
@@ -230,7 +226,7 @@ contract TokenSale {
         }
 
         tokens = _amount.mul(rate);
-        require(tokens >= remainingTokens);
+        require(remainingTokens >= tokens);
     }
 
     /*****
@@ -238,9 +234,9 @@ contract TokenSale {
         * @return balanceTokens     uint256     The remaining tokens for sale
         */
     function checkBalanceTokens() internal returns (uint256 balanceTokens) {
-        if(isCrowdSaleStatePreSale()) {
+        if(isCrowdSaleStatePreSale() || isPreSalePeriod()) {
             return PRESALE_TOKEN_LIMIT.sub(presaleTokenRaised);
-        } else if (isCrowdSaleStateICO()) {
+        } else if (isCrowdSaleStateICO() || isICOPeriod()) {
             return ICO_TOKEN_LIMIT.sub(icoTokenRaised);
         }
     }
