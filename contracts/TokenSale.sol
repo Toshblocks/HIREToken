@@ -40,10 +40,10 @@ contract TokenSale {
     uint256 public icoEndTimestamp;
 
     // Amount of tokens available for sale in Pre Sale Period
-    uint256 public constant PRESALE_TOKEN_LIMIT = 168 ** 23;
+    uint256 public constant PRESALE_TOKEN_LIMIT = 168 * 10 ** 23;
 
     // Amount of tokens available for sale in ICO Period
-    uint256 public constant ICO_TOKEN_LIMIT = 72 ** 24;
+    uint256 public constant ICO_TOKEN_LIMIT = 72 * 10 ** 24;
 
     // Total Tokens Sold in Pre Sale Period
     uint256 public presaleTokenRaised;
@@ -82,7 +82,7 @@ contract TokenSale {
         * @dev Modifier to check that amount transferred is not 0
         */
     modifier nonZero() {
-        require(msg.value != 0);
+        require(msg.value > 0);
         _;
     }
 
@@ -118,18 +118,24 @@ contract TokenSale {
         */
     function TokenSale(
         address _token,
+        address _beneficiary,
         uint256 _presaleStartTime,
         uint256 _presaleDays,
         uint256 _icoStartTime,
         uint256 _icoDays){
             require(_token != address(0));
+            require(_beneficiary != address(0));
             require(_presaleStartTime > now);
             require(_icoStartTime > _presaleStartTime);
 
             token = Token(_token);
 
+            creatorAdmin = msg.sender;
+            tokenAddress = _token;
+            beneficiary = _beneficiary;
+
             presaleStartTimestamp = _presaleStartTime;
-            presaleEndTimestamp = presaleEndTimestamp + _presaleDays * 1 days;
+            presaleEndTimestamp = presaleStartTimestamp + _presaleDays * 1 days;
 
             require(_icoStartTime > presaleEndTimestamp);
             icoStartTimestamp = _icoStartTime;
@@ -138,13 +144,29 @@ contract TokenSale {
             crowdSaleState = State.Preparing;
     }
 
+    function getTokenAddress() returns (address){
+        return tokenAddress;
+    }
+
+    function getStartTimestamp() returns(uint256) {
+        return presaleStartTimestamp;
+    }
+
+    function getEndTimestamp() returns(uint256) {
+        return presaleEndTimestamp;
+    }
+
+    function getICOState() constant returns (State) {
+        return crowdSaleState;
+    }
+
     /*****
         * @dev Trigger the starting of the ICO
         */
     function startICO() onlyOwner {
         isPreSalePeriod();
-        isICOPeriod();
     }
+
     /*****
         * @dev Fallback Function to buy the tokens
         */
