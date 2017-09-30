@@ -219,10 +219,12 @@ contract TokenSale {
         * @return balanceTokens     uint256     The remaining tokens for sale
         */
     function checkBalanceTokens() internal returns (uint256 balanceTokens) {
-        if(isCrowdSaleStatePreSale() || isPreSalePeriod()) {
+        if(isPreSalePeriod()) {
             return PRESALE_TOKEN_LIMIT.sub(presaleTokenRaised);
-        } else if (isCrowdSaleStateICO() || isICOPeriod()) {
+        } else if (isICOPeriod()) {
             return ICO_TOKEN_LIMIT.sub(icoTokenRaised);
+        } else {
+            return 0;
         }
     }
 
