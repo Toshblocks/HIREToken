@@ -26,22 +26,11 @@ contract BasicToken {
         * @param _value The value to be transferred
         */
     function transfer(address _to, uint _value) returns (bool success) {
+        require(_value > 0);
+
+        balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         Transfer(msg.sender, _to, _value);
-        return true;
-    }
-
-    /*****
-        * @dev Tranfer the token balance to a specified address
-        * @param _from      address     The address from where to transfer from
-        * @param _to        address     The address to transfer to
-        * @param _value     uint256     The value to be transferred
-        * @return           bool        Returns True if successful
-        */
-    function tranferFrom(address _from, address _to, uint256 _value) returns (bool) {
-        balances[_from] = balances[_from].sub(_value);
-        balances[_to] = balances[_to].sub(_value);
-        Transfer(_from, _to, _value);
         return true;
     }
 

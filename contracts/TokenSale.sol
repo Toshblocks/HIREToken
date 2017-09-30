@@ -138,7 +138,11 @@ contract TokenSale {
 
             creatorAdmin = msg.sender;
             tokenAddress = _token;
+
             beneficiary = _beneficiary;
+
+            // Transfer all the intial tokens to the contract's address.
+            token.initializeBalance(this);
 
             presaleStartTimestamp = _presaleStartTime;
             presaleEndTimestamp = presaleStartTimestamp + _presaleDays * 1 days;
@@ -179,13 +183,13 @@ contract TokenSale {
         }
 
         if(isCrowdSaleStatePreSale()) {
-            token.transfer(_recipient, _value);
+            token.transfer(_recipient, boughtTokens);
             presaleEtherRaised = presaleEtherRaised.add(_value);
             presaleTokensIssued = presaleTokensIssued.add(boughtTokens);
             TokensBought(_recipient, boughtTokens);
             return true;
         } else if (isCrowdSaleStateICO()) {
-            token.transfer(_recipient, _value);
+            token.transfer(_recipient, boughtTokens);
             totalEtherRaised = totalEtherRaised.add(_value);
             totalTokensIssued = totalTokensIssued.add(boughtTokens);
             TokensBought(_recipient, boughtTokens);

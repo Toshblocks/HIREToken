@@ -17,5 +17,14 @@ contract Token is StandardToken {
     uint256 public constant DECIMALS = 18;
 
     // 100 Million Tokens in supply
-    uint256 public totalTokenSupply = 10 ** 26; 
+    uint256 public totalTokenSupply = 10 ** 26;
+
+    bool alreadyInitialized = false;
+
+    function initializeBalance(address _tokenSaleAddress) returns (bool) {
+        require(!alreadyInitialized);
+        alreadyInitialized = true;
+        balances[_tokenSaleAddress] = totalTokenSupply;
+        return alreadyInitialized;
+    }
 }
