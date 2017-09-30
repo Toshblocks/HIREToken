@@ -19,8 +19,9 @@ contract StandardToken is BasicToken {
         * @param _to        address     The address which you want to transfer to
         * @param _value     uint256     The amount of tokens to be transferred
         */
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
         require(_to != address(0));
+        require(_value > 0);
 
         uint256 _allowance = allowed[_from][msg.sender];
 
@@ -28,8 +29,8 @@ contract StandardToken is BasicToken {
         // require (_value <= _allowance);
 
         balances[_from] = balances[_from].sub(_value);
-        balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = _allowance.sub(_value);
+        balances[_to] = balances[_to].add(_value);
         Transfer(_from, _to, _value);
         return true;
     }
@@ -44,7 +45,7 @@ contract StandardToken is BasicToken {
         * @param _spender   address     The address which will spend the funds.
         * @param _value     uint256     The amount of tokens to be spent.
         */
-    function approve(address _spender, uint256 _value) public returns (bool) {
+    function approve(address _spender, uint256 _value) returns (bool) {
         allowed[msg.sender][_spender] = 0;
         allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
@@ -57,7 +58,7 @@ contract StandardToken is BasicToken {
         * @param _spender   address     The address which will spend the funds.
         * @return           uint256     Specifying the amount of tokens still available for the spender.
         */
-  function allowance(address _owner, address _spender) public constant returns (uint256 remaining) {
+  function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
     return allowed[_owner][_spender];
   }
 

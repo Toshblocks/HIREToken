@@ -13,7 +13,7 @@ import './SafeMath.sol';
 contract BasicToken {
     using SafeMath for uint;
 
-    uint public totalSupply;
+    uint public totalTokenSupply;
 
     mapping(address => uint) balances;
 
@@ -57,7 +57,7 @@ contract BasicToken {
     /*****
         * @dev Gets the totalSupply of the tokens.
         */
-    function totalSupply() constant returns (uint256) {
-        return totalSupply;
+    function totalSupply() constant returns (uint totalSupply) {
+        totalSupply = totalTokenSupply;
     }
 }

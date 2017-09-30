@@ -144,27 +144,12 @@ contract TokenSale {
             crowdSaleState = State.Preparing;
     }
 
-    function getTokenAddress() returns (address){
-        return tokenAddress;
-    }
-
-    function getStartTimestamp() returns(uint256) {
-        return presaleStartTimestamp;
-    }
-
-    function getEndTimestamp() returns(uint256) {
-        return presaleEndTimestamp;
-    }
-
-    function getICOState() constant returns (State) {
-        return crowdSaleState;
-    }
-
     /*****
         * @dev Trigger the starting of the ICO
         */
-    function startICO() onlyOwner {
+    function startICO() onlyOwner returns (bool) {
         isPreSalePeriod();
+        return true;
     }
 
     /*****
@@ -210,7 +195,7 @@ contract TokenSale {
         */
     function calculateTokens(uint256 _amount) internal constant returns (uint256 tokens){
         uint256 remainingTokens = checkBalanceTokens();
-        require(remainingTokens >= 0);
+        require(remainingTokens > 0);
 
         uint256 rate;
 
@@ -261,7 +246,7 @@ contract TokenSale {
         * @dev Check if the Pre Sale Period is still ON
         * @return bool  Return true if the contract is in Pre Sale Period
         */
-    function isPreSalePeriod() internal constant returns (bool) {
+    function isPreSalePeriod() internal returns (bool) {
         if(presaleTokenRaised >= PRESALE_TOKEN_LIMIT || now >= presaleEndTimestamp) {
             crowdSaleState = State.PresaleFinalized;
             StateChanged("Pre Sale Concluded.");
@@ -282,7 +267,7 @@ contract TokenSale {
         * @dev Check if the ICO is in the Sale period or not
         * @return bool  Return true if the contract is in ICO Period
         */
-    function isICOPeriod() internal constant returns (bool) {
+    function isICOPeriod() internal returns (bool) {
         if (icoTokenRaised >= ICO_TOKEN_LIMIT || now >= icoEndTimestamp) {
             crowdSaleState = State.ICOFinalized;
             StateChanged("ICO Concluded.");
