@@ -1,13 +1,8 @@
-var HireIco = artifacts.require("./HireIco.sol");
+var Token = artifacts.require("./Token.sol");
+var TokenSale = artifacts.require("./TokenSale.sol");
 
-module.exports = function(deployer, network, accounts) {
-  if (network === "live") {
-    // TODO
-  } else {
-    var newOwner = accounts[0];
-    var newWallet = accounts[0];
-    var nowInSeconds = Math.floor(Date.now() / 1000);
-    deployer.deploy(HireIco, newOwner, nowInSeconds, newWallet, 8000 * Math.pow(10, 18),
-      8000 * Math.pow(10, 18), 120000 * Math.pow(10, 18));
-  } 
+module.exports = function(deployer) {
+    deployer.deploy(Token).then(function() {
+    return deployer.deploy(TokenSale, Token.address, 1530000000, 2, 1530200000, 15);
+  });
 };
