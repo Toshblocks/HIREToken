@@ -102,6 +102,9 @@ contract TokenSale {
 
     modifier isUnHalted() {
         require(crowdSaleState != State.Halt);
+        require(crowdSaleState != State.Success);
+        require(crowdSaleState != State.Aborted);
+        require(crowdSaleState != State.ICOFinalized);
         _;
     }
 
