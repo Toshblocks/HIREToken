@@ -16,10 +16,15 @@ contract Token is StandardToken {
     // Number of decimal places for the token.
     uint256 public constant DECIMALS = 18;
 
-    /*****
-        * @dev Sets the variables related to the Token
-        */
-    function Token() {
-        totalSupply = 100 ** 24; // 100 Million Tokens in supply
+    // 100 Million Tokens in supply
+    uint256 public totalTokenSupply = 10 ** 26;
+
+    bool alreadyInitialized = false;
+
+    function initializeBalance(address _tokenSaleAddress) returns (bool) {
+        require(!alreadyInitialized);
+        alreadyInitialized = true;
+        balances[_tokenSaleAddress] = totalTokenSupply;
+        return alreadyInitialized;
     }
 }

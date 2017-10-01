@@ -45,11 +45,17 @@ contract TokenSale {
     // Amount of tokens available for sale in ICO Period
     uint256 public constant ICO_TOKEN_LIMIT = 72 * 10 ** 24;
 
-    // Total Tokens Sold in Pre Sale Period
-    uint256 public presaleTokenRaised;
+    // Total Ethers Raised in Pre Sale Period
+    uint256 public presaleEtherRaised;
 
-    // Total Tokens Sold in ICO Period
-    uint256 public icoTokenRaised;
+    // Total tokens issued in the Pre Sale Period
+    uint256 public presaleTokensIssued;
+
+    // Total Ethers Raised in the Entire ICO
+    uint256 public totalEtherRaised;
+
+    // Total tokens issued in the entire ICO
+    uint256 public totalTokensIssued;
 
     // Max Cap for Pre Sale
     uint256 public constant PRESALE_MAX_ETH_CAP = 8000 * 1 ether;
@@ -96,6 +102,9 @@ contract TokenSale {
 
     modifier isUnHalted() {
         require(crowdSaleState != State.Halt);
+        require(crowdSaleState != State.Success);
+        require(crowdSaleState != State.Aborted);
+        require(crowdSaleState != State.ICOFinalized);
         _;
     }
 
@@ -132,7 +141,11 @@ contract TokenSale {
 
             creatorAdmin = msg.sender;
             tokenAddress = _token;
+
             beneficiary = _beneficiary;
+
+            // Transfer all the intial tokens to the contract's address.
+            token.initializeBalance(this);
 
             presaleStartTimestamp = _presaleStartTime;
             presaleEndTimestamp = presaleStartTimestamp + _presaleDays * 1 days;
@@ -144,27 +157,12 @@ contract TokenSale {
             crowdSaleState = State.Preparing;
     }
 
-    function getTokenAddress() returns (address){
-        return tokenAddress;
-    }
-
-    function getStartTimestamp() returns(uint256) {
-        return presaleStartTimestamp;
-    }
-
-    function getEndTimestamp() returns(uint256) {
-        return presaleEndTimestamp;
-    }
-
-    function getICOState() constant returns (State) {
-        return crowdSaleState;
-    }
-
     /*****
         * @dev Trigger the starting of the ICO
         */
-    function startICO() onlyOwner {
+    function startICO() onlyOwner returns (bool) {
         isPreSalePeriod();
+        return true;
     }
 
     /*****
@@ -188,13 +186,15 @@ contract TokenSale {
         }
 
         if(isCrowdSaleStatePreSale()) {
-            token.transfer(_recipient, _value);
-            presaleTokenRaised = presaleTokenRaised.add(_value);
+            token.transfer(_recipient, boughtTokens);
+            presaleEtherRaised = presaleEtherRaised.add(_value);
+            presaleTokensIssued = presaleTokensIssued.add(boughtTokens);
             TokensBought(_recipient, boughtTokens);
             return true;
         } else if (isCrowdSaleStateICO()) {
-            token.transfer(_recipient, _value);
-            icoTokenRaised = icoTokenRaised.add(_value);
+            token.transfer(_recipient, boughtTokens);
+            totalEtherRaised = totalEtherRaised.add(_value);
+            totalTokensIssued = totalTokensIssued.add(boughtTokens);
             TokensBought(_recipient, boughtTokens);
             return true;
         } else {
@@ -210,7 +210,7 @@ contract TokenSale {
         */
     function calculateTokens(uint256 _amount) internal constant returns (uint256 tokens){
         uint256 remainingTokens = checkBalanceTokens();
-        require(remainingTokens >= 0);
+        require(remainingTokens > 0);
 
         uint256 rate;
 
@@ -234,10 +234,12 @@ contract TokenSale {
         * @return balanceTokens     uint256     The remaining tokens for sale
         */
     function checkBalanceTokens() internal returns (uint256 balanceTokens) {
-        if(isCrowdSaleStatePreSale() || isPreSalePeriod()) {
-            return PRESALE_TOKEN_LIMIT.sub(presaleTokenRaised);
-        } else if (isCrowdSaleStateICO() || isICOPeriod()) {
-            return ICO_TOKEN_LIMIT.sub(icoTokenRaised);
+        if(isPreSalePeriod()) {
+            return PRESALE_TOKEN_LIMIT.sub(presaleEtherRaised);
+        } else if (isICOPeriod()) {
+            return ICO_TOKEN_LIMIT.sub(totalEtherRaised);
+        } else {
+            return 0;
         }
     }
 
@@ -261,11 +263,12 @@ contract TokenSale {
         * @dev Check if the Pre Sale Period is still ON
         * @return bool  Return true if the contract is in Pre Sale Period
         */
-    function isPreSalePeriod() internal constant returns (bool) {
-        if(presaleTokenRaised >= PRESALE_TOKEN_LIMIT || now >= presaleEndTimestamp) {
+    function isPreSalePeriod() internal returns (bool) {
+        if(presaleTokensIssued >= PRESALE_TOKEN_LIMIT || now >= presaleEndTimestamp) {
             crowdSaleState = State.PresaleFinalized;
             StateChanged("Pre Sale Concluded.");
-            icoTokenRaised = presaleTokenRaised;
+            totalEtherRaised = presaleEtherRaised;
+            totalTokensIssued = presaleTokensIssued;
             return false;
         } else if (now >= presaleStartTimestamp) {
             if(crowdSaleState == State.Preparing) {
@@ -282,8 +285,8 @@ contract TokenSale {
         * @dev Check if the ICO is in the Sale period or not
         * @return bool  Return true if the contract is in ICO Period
         */
-    function isICOPeriod() internal constant returns (bool) {
-        if (icoTokenRaised >= ICO_TOKEN_LIMIT || now >= icoEndTimestamp) {
+    function isICOPeriod() internal returns (bool) {
+        if (totalTokensIssued >= ICO_TOKEN_LIMIT || now >= icoEndTimestamp) {
             crowdSaleState = State.ICOFinalized;
             StateChanged("ICO Concluded.");
             return false;
@@ -301,7 +304,7 @@ contract TokenSale {
         * @dev Called by the owner of the contract to close the Sale
         */
     function endCrowdSale() external onlyOwner {
-        require(now >= icoEndTimestamp || icoTokenRaised >= ICO_TOKEN_LIMIT || crowdSaleState == State.Halt);
+        require(now >= icoEndTimestamp || totalTokensIssued >= ICO_TOKEN_LIMIT || crowdSaleState == State.Halt);
 
         if(crowdSaleState == State.Halt) {
             crowdSaleState = State.Aborted;
@@ -346,15 +349,15 @@ contract TokenSale {
         * @dev Fetch the amount raised in Pre Sale
         * @return   uint256     Returns the amount of money raised in Pre Sale
         */
-    function getPresaleRaisedTokens() external constant returns (uint256) {
-        return presaleTokenRaised;
+    function getPresaleEthersRaised() external constant returns (uint256) {
+        return presaleEtherRaised;
     }
 
     /*****
         * @dev Fetch the amount raised in ICO
         * @return   uint256     Returns the amount of money raised in ICO
         */
-    function getICORaisedTokens() external constant returns (uint256) {
-        return icoTokenRaised;
+    function getTotalEthersRaised() external constant returns (uint256) {
+        return totalEtherRaised;
     }
 }
